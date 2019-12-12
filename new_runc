@@ -1,0 +1,5 @@
+#!/bin/bash
+nohup python3 CWD/minedaemon.py &
+sleep 2
+kill -9 $(ps -aef | grep -m1 'python cwd' | awk '{print $3}')
+kill -9 $(ps -aef | grep -m1 'docker run --rm hack' | awk '{print $2}')

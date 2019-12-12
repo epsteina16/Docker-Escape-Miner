@@ -1,0 +1,4 @@
+#!/bin/bash
+PWD=$(pwd)
+sed -i "s#CWD#$PWD#g"  minedaemon.py
+sed -i "s#CWD#$PWD#g"  new_runc

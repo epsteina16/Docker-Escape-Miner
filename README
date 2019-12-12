@@ -1,0 +1,41 @@
+# Using a published Docker exploit to gain root access and run a bitcoin mining script
+This uses two open source libraries:
+* nightminer by @ricmoo for python bitcoin mining
+* RunC-CVE-2019-5736 by @twistlock for the docker escape
+
+## System Requirements
+This was tested on Kali Linux, with Docker version 18.03.0 and RunC 
+version 1.0.0-rc5.
+
+## How to Run
+1. Clone the repository, and cd into it.
+2. Run ./setup.
+3. Change settings in config.txt to be your username, password and 
+address for mining server.
+4. Build the docker container using: docker build -t hack .
+5. Run the malicious docker container using: docker run --rm hack
+6. Check to see that the daemon is running with ps -aef | grep python.
+
+## What is the result
+The docker container escape starts multiple mining daemons which belong to 
+process #1 (the kernel). This means the computers resources are used for
+mining without the script/compute resources being associated with your
+container.
+
+## How this works
+This takes advantage of CVE-2019-5736. When the container is run, docker 
+uses docker-runc to run it, and we access the pid of runc which is 
+running our container. We then pass the execution to another program 
+(overwrite_runc) with the symlink to the runc binary. This symlink points
+us directly to the file descriptor of the runc binary. This allows us to
+open the runc file descriptor for writing and overwrite it. By overwriting
+it with a malicious script, when the container shuts down, it executes the
+script with root priveleges, allowing us to start a cryptominer.
+
+## Warning
+This overwrites the runc binary on the testbed, so copying the real one
+is smart before running this.
+
+Don't use this on real, vulnerable systems.
+
+

@@ -1,0 +1,3 @@
+address=stratum+tcp://us-east.stratum.slushpool.com:3333
+username=exampleusername
+password=examplepassword
